@@ -1,4 +1,5 @@
 using System.Windows.Controls;
+using Cintre.App.Helpers;
 
 namespace Cintre.App.Services;
 
@@ -37,6 +38,7 @@ public static class NavigationService
         {
             var vue = (UserControl)Activator.CreateInstance(type)!;
             _zone.Content = vue;
+            AnimationHelper.SlideIn(vue, 300);
             EcranCourant = ecran;
             EcranChange?.Invoke(ecran);
         }
