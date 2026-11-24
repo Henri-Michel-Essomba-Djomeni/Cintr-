@@ -92,4 +92,13 @@ public static class PaiementRepository
                  AND c.statut <> 'Annule'
                ORDER BY c.date_depot").ToList();
     }
+    
+    // Enregistre l'heure de retrait seulement si elle est vide (évite d'écraser une date déjà posée)
+    public static void AssurerDateRetrait(int commandeId)
+    {
+        using var cx = DbConnectionFactory.Creer();
+        cx.Execute(
+            "UPDATE commande SET date_retrait = NOW() WHERE id = @commandeId AND date_retrait IS NULL",
+            new { commandeId });
+    }
 }
