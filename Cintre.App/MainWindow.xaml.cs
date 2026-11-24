@@ -1,23 +1,33 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Cintre.App.Services;
 
 namespace Cintre.App;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     public MainWindow()
     {
         InitializeComponent();
+
+        TxtPressing.Text = ParametresService.NomPressing;
+        TxtUtilisateur.Text = Session.UtilisateurCourant?.Nom ?? "Non connecté";
+
+        NavigationService.Initialiser(ZoneContenu);
+        NavigationService.EcranChange += SynchroniserMenu;
+        NavigationService.Naviguer("Dashboard");
+    }
+
+    private void Menu_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is RadioButton { Tag: string ecran })
+            NavigationService.Naviguer(ecran);
+    }
+
+    // Surligne l'entrée du menu qui correspond à l'écran affiché
+    private void SynchroniserMenu(string ecran)
+    {
+        foreach (var bouton in PanneauMenu.Children.OfType<RadioButton>())
+            bouton.IsChecked = (string?)bouton.Tag == ecran;
     }
 }
