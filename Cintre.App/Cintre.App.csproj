@@ -14,4 +14,10 @@
     <PackageReference Include="Npgsql" Version="11.0.0" />
   </ItemGroup>
 
+  <!-- Les scripts SQL sont embarqués dans l'exécutable : DatabaseInitializer les lit sans dépendre d'un dossier -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\Database\schema.sql" LogicalName="schema.sql" />
+    <EmbeddedResource Include="..\Database\seed.sql" LogicalName="seed.sql" />
+  </ItemGroup>
+
 </Project>
