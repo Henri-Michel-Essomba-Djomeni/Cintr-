@@ -82,4 +82,18 @@ public static class IncidentRepository
                ORDER BY c.date_prevue",
             new { jours }).ToList();
     }
+        // Retrouve une commande par son ticket (pour déclarer un incident sans dépendre de CommandeRepository)
+    public static Commande? ObtenirCommandeParTicket(string ticket)
+    {
+        using var cx = DbConnectionFactory.Creer();
+        return cx.QueryFirstOrDefault<Commande>(
+            @"SELECT c.id, c.numero_ticket, c.client_id, c.utilisateur_id, c.date_depot,
+                     c.date_prevue, c.date_retrait, c.statut, c.urgent, c.remise_pourcent,
+                     c.montant_total, c.montant_paye, c.remarque,
+                     cl.nom AS client_nom
+                FROM commande c
+                JOIN client cl ON cl.id = c.client_id
+               WHERE c.numero_ticket = @ticket",
+            new { ticket = (ticket ?? "").Trim().ToUpperInvariant() });
+    }
 }
