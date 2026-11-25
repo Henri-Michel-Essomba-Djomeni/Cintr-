@@ -1,0 +1,64 @@
+<UserControl x:Class="Cintre.App.Controls.FolderCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="racine" Width="240" Height="150" Cursor="Hand">
+    <Grid x:Name="Corps" Background="Transparent">
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="Soulevement" Y="0"/>
+        </Grid.RenderTransform>
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="2" Opacity="0.12" Color="#000000"/>
+        </Grid.Effect>
+
+        <!-- Onglet et dos du classeur -->
+        <Border Width="90" Height="20" CornerRadius="8,8,0,0" Background="{StaticResource PrimaireFonceBrush}"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,0,0,0"/>
+        <Border Margin="0,16,0,0" CornerRadius="0,12,12,12" Background="{StaticResource PrimaireFonceBrush}"/>
+
+        <!-- Feuille avec le résumé du client, cachée derrière la couverture -->
+        <Border Margin="12,22,12,12" Background="White" CornerRadius="8" Padding="14,12">
+            <StackPanel>
+                <TextBlock Text="{Binding Nom, ElementName=racine}" FontSize="14" FontWeight="SemiBold"
+                           Foreground="{StaticResource TexteBrush}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Telephone, ElementName=racine}" Style="{StaticResource Legende}"
+                           Margin="0,2,0,0"/>
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Points, ElementName=racine}" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaireBrush}"/>
+                        <TextBlock Text="points" Style="{StaticResource Legende}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding NbCommandes, ElementName=racine}" FontSize="18" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PrimaireBrush}"/>
+                        <TextBlock Text="commandes" Style="{StaticResource Legende}"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Couverture : se rabat vers le bas au survol -->
+        <Border x:Name="Couverture" Margin="0,40,0,0" CornerRadius="12"
+                Background="{StaticResource PrimaireBrush}" RenderTransformOrigin="0.5,1">
+            <Border.RenderTransform>
+                <ScaleTransform x:Name="EchelleCouverture" ScaleX="1" ScaleY="1"/>
+            </Border.RenderTransform>
+            <StackPanel x:Name="ContenuCouverture" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Viewbox Width="28" Height="28" HorizontalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="{StaticResource IconClients}" Stroke="White" StrokeThickness="1.8"
+                              StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Canvas>
+                </Viewbox>
+                <TextBlock Text="{Binding Nom, ElementName=racine}" FontSize="14" FontWeight="SemiBold"
+                           Foreground="White" TextAlignment="Center" TextTrimming="CharacterEllipsis"
+                           MaxWidth="200" Margin="0,8,0,0"/>
+                <TextBlock Text="Client" FontSize="12" Foreground="#B3FFFFFF" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
