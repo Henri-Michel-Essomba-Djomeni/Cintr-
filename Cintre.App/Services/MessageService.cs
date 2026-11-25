@@ -1,21 +1,38 @@
 using System.Windows;
+using Cintre.App.Views;
 
 namespace Cintre.App.Services;
 
-// Point d'entrée unique pour parler à l'utilisateur. Pour l'instant, boîtes Windows simples.
-// T27 remplacera l'intérieur par ToastService et une fenêtre de confirmation au style Cintré :
-// les appelants (Info, Succes, Erreur, Confirmer) ne changeront pas.
+// Point d'entrée unique pour parler à l'utilisateur. Succès, erreur et info passent par les toasts.
 public static class MessageService
 {
-    public static void Info(string message) => Afficher(message, MessageBoxImage.Information);
+    public static void Info(string message) => Notifier(message, ToastService.Info);
 
-    public static void Succes(string message) => Afficher(message, MessageBoxImage.Information);
+    public static void Succes(string message) => Notifier(message, ToastService.Succes);
 
-    public static void Erreur(string message) => Afficher(message, MessageBoxImage.Error);
+    public static void Erreur(string message) => Notifier(message, ToastService.Erreur);
 
-    public static bool Confirmer(string question)
-        => MessageBox.Show(question, "Cintré", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+    // Fenêtre de confirmation au style Cintré. danger = true : bouton rouge (suppression, annulation).
+    public static bool Confirmer(string question, string libelleOui = "Confirmer", bool danger = false)
+    {
+        var fenetre = new ConfirmationWindow(question, libelleOui, danger);
 
-    private static void Afficher(string message, MessageBoxImage icone)
-        => MessageBox.Show(message, "Cintré", MessageBoxButton.OK, icone);
+        var proprietaire = Application.Current?.MainWindow;
+        if (proprietaire is { IsLoaded: true, IsVisible: true })
+            fenetre.Owner = proprietaire;
+        else
+            fenetre.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+        return fenetre.ShowDialog() == true;
+    }
+
+    // Avant l'ouverture de la fenêtre principale (démarrage), il n'y a pas encore de zone de toasts :
+    // on retombe alors sur une boîte Windows, uniquement pour ces erreurs de démarrage.
+    private static void Notifier(string message, Action<string> toast)
+    {
+        if (ToastService.EstPret)
+            toast(message);
+        else
+            MessageBox.Show(message, "Cintré");
+    }
 }

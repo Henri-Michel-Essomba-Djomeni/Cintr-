@@ -10,13 +10,16 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        TxtPressing.Text = ParametresService.NomPressing;
+        TxtPressing.Text = ParametresService.NomPressing == "Cintré"
+            ? "Gestion de pressing"
+            : ParametresService.NomPressing;
 
         var nom = Session.UtilisateurCourant?.Nom;
         TxtUtilisateur.Text = nom ?? "Non connecté";
         TxtInitiale.Text = string.IsNullOrWhiteSpace(nom) ? "?" : nom.Trim()[..1].ToUpper();
 
         NavigationService.Initialiser(ZoneContenu);
+        ToastService.Initialiser(ZoneToasts);
         NavigationService.EcranChange += SynchroniserMenu;
         NavigationService.Naviguer("Dashboard");
     }
