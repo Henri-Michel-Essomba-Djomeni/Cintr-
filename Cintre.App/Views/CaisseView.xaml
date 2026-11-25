@@ -130,9 +130,10 @@
                             <DataGridTextColumn Header="Montant" Binding="{Binding Montant}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
-                               Text="Aucun paiement enregistré ce jour-là."
-                               Visibility="{Binding SansPaiement, Converter={StaticResource BoolVis}}"/>
+                    <controls:EmptyState Icone="{StaticResource IconCaisse}"
+                                         Titre="Aucun paiement ce jour-là"
+                                         Message="Les encaissements de cette journée apparaîtront ici."
+                                         Visibility="{Binding SansPaiement, Converter={StaticResource BoolVis}}"/>
                 </StackPanel>
             </Border>
 
@@ -162,9 +163,10 @@
                             <DataGridTextColumn Header="Reste" Binding="{Binding Reste}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
-                               Text="Aucun impayé : toutes les commandes sont soldées."
-                               Visibility="{Binding SansImpaye, Converter={StaticResource BoolVis}}"/>
+                    <controls:EmptyState Icone="{StaticResource IconCoche}"
+                                         Titre="Aucun impayé"
+                                         Message="Toutes les commandes sont soldées."
+                                         Visibility="{Binding SansImpaye, Converter={StaticResource BoolVis}}"/>
                 </StackPanel>
             </Border>
 
