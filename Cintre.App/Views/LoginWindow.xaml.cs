@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Cintre.App.ViewModels;
 
-namespace Cintre.App.Views
+namespace Cintre.App.Views;
+
+public partial class LoginWindow : Window
 {
-    /// <summary>
-    /// Logique d'interaction pour LoginWindow.xaml
-    /// </summary>
-    public partial class LoginWindow : Window
+    public LoginWindow()
     {
-        public LoginWindow()
+        InitializeComponent();
+
+        var vm = new LoginViewModel();
+        vm.ConnexionReussie += () =>
         {
-            InitializeComponent();
-        }
+            new MainWindow().Show();   // d'abord ouvrir, ensuite fermer
+            Close();
+        };
+        DataContext = vm;
+
+        Loaded += (_, _) => TxtLogin.Focus();
     }
 }
