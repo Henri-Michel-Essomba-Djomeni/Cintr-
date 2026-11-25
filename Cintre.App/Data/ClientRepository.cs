@@ -77,6 +77,14 @@ public static class ClientRepository
             new { clientId, points });
     }
 
+    // Nombre de commandes de chaque client (clé = id du client). Sert aux cartes de la liste.
+    public static Dictionary<int, int> CompterCommandesParClient()
+    {
+        using var cx = DbConnectionFactory.Creer();
+        return cx.Query("SELECT client_id, COUNT(*)::int AS nb FROM commande GROUP BY client_id")
+                 .ToDictionary(r => (int)r.client_id, r => (int)r.nb);
+    }
+
     // Lève une exception si ce téléphone appartient déjà à un AUTRE client
     private static void VerifierTelephoneLibre(NpgsqlConnection cx, string telephone, int idClientCourant)
     {
