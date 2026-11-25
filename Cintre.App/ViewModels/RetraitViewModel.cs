@@ -189,6 +189,21 @@ public class RetraitViewModel : ViewModelBase
                 MessageErreur = $"Aucune commande trouvée pour le ticket {ticket}.";
                 return;
             }
+
+            // Si le ticket n'a pas rempli le nom du client ni les articles, on complète
+            // avec ObtenirParId, sans jamais écraser une information déjà présente
+            if (string.IsNullOrWhiteSpace(c.ClientNom) || c.Lignes.Count == 0)
+            {
+                var complete = CommandeRepository.ObtenirParId(c.Id);
+                if (complete != null)
+                {
+                    if (string.IsNullOrWhiteSpace(c.ClientNom))
+                        c.ClientNom = complete.ClientNom;
+                    if (c.Lignes.Count == 0)
+                        c.Lignes = complete.Lignes;
+                }
+            }
+
             Charger(c);
         }
         catch (Exception ex)
