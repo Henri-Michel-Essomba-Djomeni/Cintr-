@@ -46,7 +46,16 @@
                     <TextBox Style="{StaticResource ChampTexte}" Text="{Binding JoursAbandon, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </Border>
-
+            <!-- Carte 3 : serveur -->
+            <Border Style="{StaticResource Carte}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Serveur" Style="{StaticResource TitreCarte}" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource Legende}" TextWrapping="Wrap" Margin="0,0,0,14"
+                               Text="Adresse du serveur PostgreSQL utilisé par l'application."/>
+                    <Button Content="Configurer la connexion" Style="{StaticResource BoutonSecondaire}"
+                            HorizontalAlignment="Left" Command="{Binding OuvrirServeurCommand}"/>
+                </StackPanel>
+            </Border>
             <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"/>
             <TextBlock Style="{StaticResource Legende}" Foreground="#2E7D32" FontWeight="SemiBold"
                        Margin="2,4,0,0" Text="{Binding MessageSucces}"/>

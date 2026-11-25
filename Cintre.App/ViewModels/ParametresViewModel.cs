@@ -2,6 +2,8 @@
 using Cintre.App.Data;
 using Cintre.App.Helpers;
 using Cintre.App.Services;
+using System.Windows;
+using Cintre.App.Views;
 
 namespace Cintre.App.ViewModels;
 
@@ -27,10 +29,12 @@ public class ParametresViewModel : ViewModelBase
     public string MessageSucces { get => _messageSucces; set => SetProperty(ref _messageSucces, value); }
 
     public RelayCommand EnregistrerCommand { get; }
+    public RelayCommand OuvrirServeurCommand { get; }
 
     public ParametresViewModel()
     {
         EnregistrerCommand = new RelayCommand(_ => Enregistrer());
+        OuvrirServeurCommand = new RelayCommand(_ => OuvrirServeur());
         Charger();
     }
 
@@ -55,6 +59,16 @@ public class ParametresViewModel : ViewModelBase
         SeuilPointsRemise = ParametresService.SeuilPointsRemise.ToString(CultureInfo.InvariantCulture);
         RemiseFidelitePourcent = ParametresService.RemiseFideliteMax.ToString(CultureInfo.InvariantCulture);
         JoursAbandon = ParametresService.JoursAbandon.ToString(CultureInfo.InvariantCulture);
+    }
+    private void OuvrirServeur()
+    {
+        var fenetre = new ConnexionBaseWindow { Owner = Application.Current.MainWindow };
+        if (fenetre.ShowDialog() == true)
+        {
+            Charger();   // relit les paramètres depuis le serveur choisi
+            MessageErreur = "";
+            MessageSucces = "Connexion à la base enregistrée.";
+        }
     }
 
     private void Enregistrer()
