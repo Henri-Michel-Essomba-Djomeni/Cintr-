@@ -11,7 +11,10 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         TxtPressing.Text = ParametresService.NomPressing;
-        TxtUtilisateur.Text = Session.UtilisateurCourant?.Nom ?? "Non connecté";
+
+        var nom = Session.UtilisateurCourant?.Nom;
+        TxtUtilisateur.Text = nom ?? "Non connecté";
+        TxtInitiale.Text = string.IsNullOrWhiteSpace(nom) ? "?" : nom.Trim()[..1].ToUpper();
 
         NavigationService.Initialiser(ZoneContenu);
         NavigationService.EcranChange += SynchroniserMenu;
@@ -24,7 +27,12 @@ public partial class MainWindow : Window
             NavigationService.Naviguer(ecran);
     }
 
-    // Surligne l'entrée du menu qui correspond à l'écran affiché
+    private void Deconnexion_Click(object sender, RoutedEventArgs e)
+    {
+        // Branché sur AuthService.Deconnecter par Belvian (T11/T12)
+        MessageService.Info("La déconnexion sera active avec l'authentification.");
+    }
+
     private void SynchroniserMenu(string ecran)
     {
         foreach (var bouton in PanneauMenu.Children.OfType<RadioButton>())
