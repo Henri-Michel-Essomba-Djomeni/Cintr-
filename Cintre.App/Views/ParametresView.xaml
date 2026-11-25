@@ -1,8 +1,59 @@
 ﻿<UserControl x:Class="Cintre.App.Views.ParametresView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="Paramètres" Style="{StaticResource TitrePage}"/>
-        <TextBlock Text="Écran en construction." Style="{StaticResource Legende}" Margin="0,8,0,0"/>
-    </StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32" MaxWidth="720" HorizontalAlignment="Left">
+
+            <TextBlock Text="Paramètres" Style="{StaticResource TitrePage}" Margin="0,0,0,20"/>
+
+            <!-- Carte 1 : informations -->
+            <Border Style="{StaticResource Carte}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Informations du pressing" Style="{StaticResource TitreCarte}" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Nom du pressing" Style="{StaticResource Legende}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding NomPressing, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Adresse" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding Adresse, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Téléphone" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding Telephone, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Devise" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding Devise, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Carte 2 : règles -->
+            <Border Style="{StaticResource Carte}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Règles" Style="{StaticResource TitreCarte}" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Délai standard (jours)" Style="{StaticResource Legende}" Margin="0,0,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding DelaiStandardJours, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Supplément urgence (%)" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding SupplementUrgencePourcent, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Points nécessaires pour une remise" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding SeuilPointsRemise, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Remise de fidélité (%)" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding RemiseFidelitePourcent, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Jours avant qu'un linge prêt soit considéré abandonné" Style="{StaticResource Legende}" Margin="0,14,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Text="{Binding JoursAbandon, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"/>
+            <TextBlock Style="{StaticResource Legende}" Foreground="#2E7D32" FontWeight="SemiBold"
+                       Margin="2,4,0,0" Text="{Binding MessageSucces}"/>
+
+            <Button Content="Enregistrer" Style="{StaticResource BoutonPrimaire}"
+                    HorizontalAlignment="Left" Margin="0,12,0,0"
+                    Command="{Binding EnregistrerCommand}"/>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
