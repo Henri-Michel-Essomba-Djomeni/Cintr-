@@ -17,6 +17,7 @@ public partial class MainWindow : Window
         TxtInitiale.Text = string.IsNullOrWhiteSpace(nom) ? "?" : nom.Trim()[..1].ToUpper();
 
         NavigationService.Initialiser(ZoneContenu);
+        ToastService.Initialiser(ZoneToasts);
         NavigationService.EcranChange += SynchroniserMenu;
         NavigationService.Naviguer("Dashboard");
     }
