@@ -1,0 +1,8 @@
+﻿<UserControl x:Class="Cintre.App.Views.TarifsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="Tarifs" Style="{StaticResource TitrePage}"/>
+        <TextBlock Text="Écran en construction." Style="{StaticResource Legende}" Margin="0,8,0,0"/>
+    </StackPanel>
+</UserControl>
