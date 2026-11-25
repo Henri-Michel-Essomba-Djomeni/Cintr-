@@ -164,7 +164,7 @@ public class CaisseViewModel : ViewModelBase
                     Heure = p.DatePaiement.ToString("HH:mm", Fr),
                     Ticket = p.NumeroTicket,
                     Client = p.ClientNom,
-                    Mode = RecuService.LibelleMode(p.Mode),
+                    Mode = LibelleMode(p.Mode),
                     Montant = Fcfa(p.Montant)
                 });
             }
@@ -198,6 +198,15 @@ public class CaisseViewModel : ViewModelBase
         OnPropertyChanged(nameof(SansPaiement));
         OnPropertyChanged(nameof(SansImpaye));
     }
+
+       // Libellé lisible du mode de paiement
+    private static string LibelleMode(ModePaiement mode) => mode switch
+    {
+        ModePaiement.Especes => "Espèces",
+        ModePaiement.MobileMoney => "Mobile Money",
+        ModePaiement.Carte => "Carte",
+        _ => mode.ToString()
+    };
 
     private static string Fcfa(decimal montant) => montant.ToString("N0", Fr) + " FCFA";
 }
