@@ -10,7 +10,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        TxtPressing.Text = ParametresService.NomPressing;
+        TxtPressing.Text = ParametresService.NomPressing == "Cintré"
+            ? "Gestion de pressing"
+            : ParametresService.NomPressing;
 
         var nom = Session.UtilisateurCourant?.Nom;
         TxtUtilisateur.Text = nom ?? "Non connecté";
