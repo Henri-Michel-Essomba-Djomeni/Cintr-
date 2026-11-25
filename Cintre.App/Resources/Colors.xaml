@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Palette Cintré (section 9 du dossier) -->
+    <!-- Palette Cintré (section 9.1 du dossier) -->
     <SolidColorBrush x:Key="PrimaireBrush" Color="#0E7C86"/>
     <SolidColorBrush x:Key="PrimaireFonceBrush" Color="#095A62"/>
     <SolidColorBrush x:Key="FondBrush" Color="#F4F8FA"/>
@@ -12,6 +12,12 @@
     <SolidColorBrush x:Key="TexteBrush" Color="#1F2D3D"/>
     <SolidColorBrush x:Key="TexteDiscretBrush" Color="#6B7A8C"/>
     <SolidColorBrush x:Key="BordureBrush" Color="#D5DEE5"/>
+
+    <!-- Teintes dérivées de la palette (survols, sélection, séparateurs) -->
+    <SolidColorBrush x:Key="SurvolBrush" Color="#EEF6F7"/>
+    <SolidColorBrush x:Key="SelectionBrush" Color="#DDEEF0"/>
+    <SolidColorBrush x:Key="SeparateurBrush" Color="#E8EEF2"/>
+    <SolidColorBrush x:Key="PouceBrush" Color="#B8C7D1"/>
 
     <!-- Couleurs des statuts de commande -->
     <SolidColorBrush x:Key="StatutRecuBrush" Color="#3B82F6"/>

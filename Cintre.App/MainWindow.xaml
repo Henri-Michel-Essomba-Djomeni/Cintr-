@@ -1,49 +1,107 @@
 ﻿<Window x:Class="Cintre.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:Cintre.App.Helpers"
         Title="Cintré" Width="1280" Height="760" MinWidth="1100" MinHeight="700"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource FondBrush}"
         FontFamily="Segoe UI" FontSize="14"
         Foreground="{StaticResource TexteBrush}">
+
+    <!-- Le cintre du logo se balance doucement dès l'ouverture -->
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="balancier" Storyboard.TargetProperty="Angle"
+                                     From="-8" To="8" Duration="0:0:1.6"
+                                     AutoReverse="True" RepeatBehavior="Forever">
+                        <DoubleAnimation.EasingFunction>
+                            <SineEase EasingMode="EaseInOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="248"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Menu latéral -->
-        <Border Background="{StaticResource PrimaireBrush}">
+        <Border>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#0E7C86" Offset="0"/>
+                    <GradientStop Color="#095A62" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Margin="24,28,24,24">
-                    <TextBlock Text="Cintré" FontSize="28" FontWeight="SemiBold" Foreground="White"/>
-                    <TextBlock x:Name="TxtPressing" Text="Gestion de pressing" FontSize="12"
-                               Foreground="#B3FFFFFF" Margin="0,2,0,0"/>
+                <!-- Logo -->
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,28,24,28">
+                    <Viewbox Width="30" Height="30" RenderTransformOrigin="0.5,0.15">
+                        <Viewbox.RenderTransform>
+                            <RotateTransform x:Name="balancier" Angle="0"/>
+                        </Viewbox.RenderTransform>
+                        <Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource IconCintre}" Stroke="White" StrokeThickness="1.8"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
+                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Cintré" FontSize="24" FontWeight="SemiBold" Foreground="White"/>
+                        <TextBlock x:Name="TxtPressing" Text="Gestion de pressing" FontSize="12" Foreground="#B3FFFFFF"/>
+                    </StackPanel>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="24,12,24,20">
-                    <TextBlock x:Name="TxtUtilisateur" Text="Non connecté" FontSize="12" Foreground="#B3FFFFFF"/>
+                <!-- Utilisateur et déconnexion -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,12,20,20">
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,12">
+                        <Border Width="36" Height="36" CornerRadius="18" Background="#33FFFFFF">
+                            <TextBlock x:Name="TxtInitiale" Text="?" FontWeight="SemiBold" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="TxtUtilisateur" Text="Non connecté" Foreground="White"
+                                   VerticalAlignment="Center" Margin="12,0,0,0" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <Button Content="Déconnexion" Style="{StaticResource BoutonFantome}" Click="Deconnexion_Click"/>
                 </StackPanel>
 
+                <!-- Entrées du menu -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="PanneauMenu" Margin="12,0">
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Tableau de bord" Tag="Dashboard" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Dépôt" Tag="Depot" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Commandes" Tag="Commandes" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Retrait" Tag="Retrait" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Caisse" Tag="Caisse" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Incidents" Tag="Incidents" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Clients" Tag="Clients" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Tarifs" Tag="Tarifs" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Statistiques" Tag="Statistiques" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Utilisateurs" Tag="Utilisateurs" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource ItemMenu}" Content="Paramètres" Tag="Parametres" Click="Menu_Click"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Tableau de bord" Tag="Dashboard" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconDashboard}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Dépôt" Tag="Depot" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconDepot}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Commandes" Tag="Commandes" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconCommandes}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Retrait" Tag="Retrait" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconRetrait}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Caisse" Tag="Caisse" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconCaisse}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Incidents" Tag="Incidents" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconIncidents}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Clients" Tag="Clients" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconClients}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Tarifs" Tag="Tarifs" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconTarifs}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Statistiques" Tag="Statistiques" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconStatistiques}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Utilisateurs" Tag="Utilisateurs" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconUtilisateurs}"/>
+                        <RadioButton Style="{StaticResource ItemMenu}" Content="Paramètres" Tag="Parametres" Click="Menu_Click"
+                                     helpers:Icone.Geometrie="{StaticResource IconParametres}"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
         </Border>
 
-        <!-- Zone de contenu : NavigationService y place l'écran courant -->
+        <!-- Zone de contenu -->
         <ContentControl x:Name="ZoneContenu" Grid.Column="1" Margin="32,28"
                         HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
     </Grid>
