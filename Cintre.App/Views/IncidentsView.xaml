@@ -1,0 +1,179 @@
+﻿<UserControl x:Class="Cintre.App.Views.IncidentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- Onglet en forme de pastille (propre à cet écran) -->
+        <Style x:Key="OngletIncident" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TexteBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="fond" Background="White"
+                                BorderBrush="{StaticResource BordureBrush}"
+                                BorderThickness="1.5" CornerRadius="8" Padding="18,9">
+                            <ContentPresenter x:Name="contenu"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="fond" Property="Background" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="contenu" Property="TextElement.Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="1000" HorizontalAlignment="Left" Margin="0,0,0,24">
+
+            <TextBlock Text="Incidents" Style="{StaticResource TitrePage}"/>
+
+            <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"
+                       Visibility="{Binding AErreur, Converter={StaticResource BoolVis}}"/>
+            <TextBlock Text="{Binding MessageSucces}" Foreground="{StaticResource SuccesBrush}"
+                       FontSize="14" TextWrapping="Wrap" Margin="0,8,0,0"
+                       Visibility="{Binding ASucces, Converter={StaticResource BoolVis}}"/>
+
+            <!-- ===== Déclarer un incident ===== -->
+            <Border x:Name="CarteDeclaration" Style="{StaticResource Carte}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="Déclarer un incident" Style="{StaticResource TitreCarte}"/>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Numéro de ticket" Style="{StaticResource Legende}"/>
+                            <TextBox Style="{StaticResource ChampTexte}" Margin="0,4,0,0"
+                                     Text="{Binding TicketSaisi, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Type d'incident" Style="{StaticResource Legende}"/>
+                            <ComboBox Margin="0,4,0,0" MinHeight="40" VerticalContentAlignment="Center"
+                                      ItemsSource="{Binding Types}"
+                                      SelectedItem="{Binding TypeChoisi}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Description" Style="{StaticResource Legende}" Margin="0,12,0,0"/>
+                    <TextBox Style="{StaticResource ChampTexte}" Margin="0,4,0,0"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="70"
+                             VerticalContentAlignment="Top"
+                             Text="{Binding DescriptionSaisie, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Button Content="Déclarer l'incident" Style="{StaticResource BoutonPrimaire}"
+                            HorizontalAlignment="Left" Margin="0,16,0,0"
+                            Command="{Binding DeclarerCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Onglets ===== -->
+            <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+                <RadioButton Style="{StaticResource OngletIncident}" GroupName="OngletsIncidents"
+                             Content="Incidents" Margin="0,0,8,0"
+                             IsChecked="{Binding OngletIncidents}"/>
+                <RadioButton Style="{StaticResource OngletIncident}" GroupName="OngletsIncidents"
+                             Content="Linge abandonné"
+                             IsChecked="{Binding OngletAbandons}"/>
+            </StackPanel>
+
+            <!-- ===== Liste des incidents ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding OngletIncidents, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <CheckBox Content="Afficher seulement les incidents ouverts"
+                              IsChecked="{Binding SeulementOuverts}" Margin="0,0,0,12"/>
+
+                    <DataGrid ItemsSource="{Binding Incidents}"
+                              SelectedItem="{Binding IncidentSelectionne, Mode=TwoWay}"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
+                              GridLinesVisibility="None" HeadersVisibility="Column" RowHeight="48"
+                              Background="Transparent" BorderThickness="0" SelectionMode="Single"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ColumnHeaderStyle="{StaticResource EnTeteColonne}"
+                              RowStyle="{StaticResource LigneTableau}"
+                              CellStyle="{StaticResource CelluleTableau}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ticket" Binding="{Binding Ticket}" Width="*"/>
+                            <DataGridTextColumn Header="Client" Binding="{Binding Client}" Width="2*"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="*"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
+                            <DataGridTextColumn Header="Statut" Binding="{Binding Statut}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
+                               Text="Aucun incident à afficher."
+                               Visibility="{Binding SansIncident, Converter={StaticResource BoolVis}}"/>
+
+                    <!-- Détail et résolution de l'incident sélectionné -->
+                    <StackPanel Margin="0,16,0,0"
+                                Visibility="{Binding ASelection, Converter={StaticResource BoolVis}}">
+                        <TextBlock Text="{Binding SelectionTitre}" Style="{StaticResource TitreCarte}"/>
+                        <TextBlock Text="{Binding SelectionDescription}" TextWrapping="Wrap" Margin="0,6,0,0"
+                                   Foreground="{StaticResource TexteBrush}"/>
+                        <TextBlock Text="{Binding SelectionResolution}" Style="{StaticResource Legende}"
+                                   TextWrapping="Wrap" Margin="0,6,0,0"/>
+
+                        <StackPanel Visibility="{Binding PeutResoudre, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Comment l'incident a-t-il été résolu ?"
+                                       Style="{StaticResource Legende}" Margin="0,12,0,0"/>
+                            <TextBox Style="{StaticResource ChampTexte}" Margin="0,4,0,0"
+                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
+                                     VerticalContentAlignment="Top"
+                                     Text="{Binding ResolutionSaisie, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Content="Marquer comme résolu" Style="{StaticResource BoutonAccent}"
+                                    HorizontalAlignment="Left" Margin="0,12,0,0"
+                                    Command="{Binding ResoudreCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Linge abandonné ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding OngletAbandons, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding AbandonLegende}" Style="{StaticResource Legende}"
+                               TextWrapping="Wrap" Margin="0,0,0,12"/>
+                    <DataGrid ItemsSource="{Binding Abandonnes}"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
+                              GridLinesVisibility="None" HeadersVisibility="Column" RowHeight="48"
+                              Background="Transparent" BorderThickness="0" SelectionMode="Single"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ColumnHeaderStyle="{StaticResource EnTeteColonne}"
+                              RowStyle="{StaticResource LigneTableau}"
+                              CellStyle="{StaticResource CelluleTableau}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ticket" Binding="{Binding Ticket}" Width="*"/>
+                            <DataGridTextColumn Header="Client" Binding="{Binding Client}" Width="2*"/>
+                            <DataGridTextColumn Header="Prêt depuis le" Binding="{Binding PretDepuis}" Width="*"/>
+                            <DataGridTextColumn Header="Reste à payer" Binding="{Binding Reste}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
+                               Text="Aucun linge abandonné."
+                               Visibility="{Binding SansAbandon, Converter={StaticResource BoolVis}}"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

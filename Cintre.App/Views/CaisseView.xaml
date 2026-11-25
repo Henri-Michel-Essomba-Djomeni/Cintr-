@@ -1,0 +1,168 @@
+﻿<UserControl x:Class="Cintre.App.Views.CaisseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- Onglet en forme de pastille (propre à cet écran) -->
+        <Style x:Key="OngletCaisse" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TexteBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="fond" Background="White"
+                                BorderBrush="{StaticResource BordureBrush}"
+                                BorderThickness="1.5" CornerRadius="8" Padding="18,9">
+                            <ContentPresenter x:Name="contenu"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="fond" Property="Background" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="contenu" Property="TextElement.Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="1000" HorizontalAlignment="Left" Margin="0,0,0,24">
+
+            <TextBlock Text="Caisse" Style="{StaticResource TitrePage}"/>
+
+            <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"
+                       Visibility="{Binding AErreur, Converter={StaticResource BoolVis}}"/>
+
+            <!-- ===== Choix du jour ===== -->
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                <Button Content="Précédent" Style="{StaticResource BoutonSecondaire}"
+                        Command="{Binding PrecedentCommand}"/>
+                <TextBlock Text="{Binding DateTexte}" Style="{StaticResource TitreCarte}"
+                           MinWidth="280" TextAlignment="Center" VerticalAlignment="Center"/>
+                <Button Content="Suivant" Style="{StaticResource BoutonSecondaire}"
+                        Command="{Binding SuivantCommand}"/>
+                <Button Content="Aujourd'hui" Style="{StaticResource BoutonPrimaire}" Margin="12,0,0,0"
+                        Command="{Binding AujourdhuiCommand}"/>
+            </StackPanel>
+
+            <!-- ===== Total encaissé ===== -->
+            <Border x:Name="CarteTotal" Style="{StaticResource Carte}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="Total encaissé" Style="{StaticResource Legende}"/>
+                    <TextBlock Text="{Binding TotalTexte}" Style="{StaticResource TitrePage}"
+                               Foreground="{StaticResource PrimaireBrush}" Margin="0,4,0,0"/>
+                    <TextBlock Text="{Binding NbPaiementsTexte}" Style="{StaticResource Legende}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Détail par mode de paiement ===== -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Carte}">
+                    <StackPanel>
+                        <TextBlock Text="Espèces" Style="{StaticResource Legende}"/>
+                        <TextBlock Text="{Binding EspecesTexte}" Style="{StaticResource TitreCarte}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Carte}">
+                    <StackPanel>
+                        <TextBlock Text="Mobile Money" Style="{StaticResource Legende}"/>
+                        <TextBlock Text="{Binding MobileMoneyTexte}" Style="{StaticResource TitreCarte}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="4" Style="{StaticResource Carte}">
+                    <StackPanel>
+                        <TextBlock Text="Carte" Style="{StaticResource Legende}"/>
+                        <TextBlock Text="{Binding CarteTexte}" Style="{StaticResource TitreCarte}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ===== Onglets ===== -->
+            <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+                <RadioButton Style="{StaticResource OngletCaisse}" GroupName="OngletsCaisse"
+                             Content="Paiements du jour" Margin="0,0,8,0"
+                             IsChecked="{Binding OngletPaiements}"/>
+                <RadioButton Style="{StaticResource OngletCaisse}" GroupName="OngletsCaisse"
+                             Content="Impayés"
+                             IsChecked="{Binding OngletImpayes}"/>
+            </StackPanel>
+
+            <!-- ===== Paiements du jour ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding OngletPaiements, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <DataGrid ItemsSource="{Binding Paiements}"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
+                              GridLinesVisibility="None" HeadersVisibility="Column" RowHeight="48"
+                              Background="Transparent" BorderThickness="0" SelectionMode="Single"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ColumnHeaderStyle="{StaticResource EnTeteColonne}"
+                              RowStyle="{StaticResource LigneTableau}"
+                              CellStyle="{StaticResource CelluleTableau}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Heure" Binding="{Binding Heure}" Width="*"/>
+                            <DataGridTextColumn Header="Ticket" Binding="{Binding Ticket}" Width="2*"/>
+                            <DataGridTextColumn Header="Client" Binding="{Binding Client}" Width="2*"/>
+                            <DataGridTextColumn Header="Mode" Binding="{Binding Mode}" Width="*"/>
+                            <DataGridTextColumn Header="Montant" Binding="{Binding Montant}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
+                               Text="Aucun paiement enregistré ce jour-là."
+                               Visibility="{Binding SansPaiement, Converter={StaticResource BoolVis}}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Impayés ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding OngletImpayes, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <TextBlock Text="Total restant à encaisser" Style="{StaticResource Legende}"/>
+                    <TextBlock Text="{Binding TotalImpayesTexte}" Style="{StaticResource TitreCarte}"
+                               Foreground="{StaticResource DangerBrush}" Margin="0,4,0,12"/>
+                    <DataGrid ItemsSource="{Binding Impayes}"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                              CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False"
+                              GridLinesVisibility="None" HeadersVisibility="Column" RowHeight="48"
+                              Background="Transparent" BorderThickness="0" SelectionMode="Single"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ColumnHeaderStyle="{StaticResource EnTeteColonne}"
+                              RowStyle="{StaticResource LigneTableau}"
+                              CellStyle="{StaticResource CelluleTableau}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ticket" Binding="{Binding Ticket}" Width="2*"/>
+                            <DataGridTextColumn Header="Client" Binding="{Binding Client}" Width="2*"/>
+                            <DataGridTextColumn Header="Déposé le" Binding="{Binding Depuis}" Width="*"/>
+                            <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="*"/>
+                            <DataGridTextColumn Header="Payé" Binding="{Binding Paye}" Width="*"/>
+                            <DataGridTextColumn Header="Reste" Binding="{Binding Reste}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
+                               Text="Aucun impayé : toutes les commandes sont soldées."
+                               Visibility="{Binding SansImpaye, Converter={StaticResource BoolVis}}"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
