@@ -12,7 +12,17 @@
     </Window.Resources>
 
     <StackPanel Margin="32">
-        <controls:HangerBar Nombre="6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+            <Border Width="48" Height="48" CornerRadius="14" Background="{StaticResource PrimaireBrush}">
+                <Viewbox Width="26" Height="26">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="{StaticResource IconCintre}" Stroke="White" StrokeThickness="1.8"
+                              StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Canvas>
+                </Viewbox>
+            </Border>
+            <TextBlock Text="Cintré" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="14,0,0,0"/>
+        </StackPanel>
         <TextBlock Text="Connexion à la base" Style="{StaticResource TitrePage}" Margin="0,4,0,0"/>
         <TextBlock Style="{StaticResource Legende}" TextWrapping="Wrap" Margin="0,6,0,0"
                    Text="Indique l'adresse du serveur PostgreSQL. Sur le PC qui héberge la base, utilise « Je suis l'hôte »."/>

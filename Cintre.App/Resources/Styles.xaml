@@ -609,4 +609,11 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- ===== Filet de sécurité : les contrôles sans style explicite prennent le thème ===== -->
+    <Style TargetType="TextBox" BasedOn="{StaticResource ChampTexte}"/>
+    <Style TargetType="PasswordBox" BasedOn="{StaticResource ChampMotDePasse}"/>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource CaseCocher}"/>
+    <Style TargetType="Button" BasedOn="{StaticResource BoutonSecondaire}"/>
+
 </ResourceDictionary>
