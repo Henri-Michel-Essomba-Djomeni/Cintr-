@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Microsoft.Win32;
 using Cintre.App.Data;
 using Cintre.App.Helpers;
 using Cintre.App.Models;
@@ -242,6 +243,22 @@ public class DepotViewModel : ViewModelBase
     private string _remarqueLigne = "";
     public string RemarqueLigne { get => _remarqueLigne; set => SetProperty(ref _remarqueLigne, value); }
 
+    // Photo de la ligne en cours de saisie (déjà réduite à 800 px, prête à être enregistrée)
+    private byte[]? _photoCourante;
+    public byte[]? PhotoCourante
+    {
+        get => _photoCourante;
+        private set
+        {
+            if (!SetProperty(ref _photoCourante, value)) return;
+            OnPropertyChanged(nameof(APhoto));
+            OnPropertyChanged(nameof(PhotoTexte));
+        }
+    }
+
+    public bool APhoto => PhotoCourante != null;
+    public string PhotoTexte => APhoto ? "Photo ajoutée" : "Aucune photo";
+
     // ------------------------------------------------------------------
     // Étape 3 : récapitulatif
     // ------------------------------------------------------------------
@@ -275,11 +292,11 @@ public class DepotViewModel : ViewModelBase
 
     private void RaiserRecap()
     {
-        OnPropertyChanged(nameof(SousTotalTexte));
         OnPropertyChanged(nameof(RemiseDisponible));
         OnPropertyChanged(nameof(RemisePourcent));
         OnPropertyChanged(nameof(Total));
         OnPropertyChanged(nameof(TotalTexte));
+        OnPropertyChanged(nameof(SousTotalTexte));
         OnPropertyChanged(nameof(DatePrevueTexte));
         OnPropertyChanged(nameof(RemiseTexte));
         OnPropertyChanged(nameof(ResumeArticles));
@@ -295,6 +312,8 @@ public class DepotViewModel : ViewModelBase
     public ICommand CreerClientCommand { get; }
     public ICommand AjouterLigneCommand { get; }
     public ICommand SupprimerLigneCommand { get; }
+    public ICommand ChoisirPhotoCommand { get; }
+    public ICommand RetirerPhotoCommand { get; }
     public ICommand ValiderCommand { get; }
 
     public DepotViewModel()
@@ -311,6 +330,8 @@ public class DepotViewModel : ViewModelBase
         CreerClientCommand = new RelayCommand(_ => CreerClient());
         AjouterLigneCommand = new RelayCommand(_ => AjouterLigne(), _ => PrixCourant != null && Quantite > 0);
         SupprimerLigneCommand = new RelayCommand(p => { if (p is LigneCommande l) Lignes.Remove(l); });
+        ChoisirPhotoCommand = new RelayCommand(_ => ChoisirPhoto());
+        RetirerPhotoCommand = new RelayCommand(_ => PhotoCourante = null, _ => APhoto);
         ValiderCommand = new RelayCommand(_ => Valider());
 
         RechargerClients();
@@ -382,6 +403,28 @@ public class DepotViewModel : ViewModelBase
             Erreur = "Ce service n'est pas proposé pour ce vêtement";
     }
 
+    // Ouvre le sélecteur de fichier, réduit l'image à 800 px de large maximum
+    private void ChoisirPhoto()
+    {
+        var dialogue = new OpenFileDialog
+        {
+            Title = "Choisir une photo du vêtement",
+            Filter = "Images|*.jpg;*.jpeg;*.png;*.bmp"
+        };
+
+        if (dialogue.ShowDialog() != true) return;
+
+        try
+        {
+            PhotoCourante = ImageHelper.Redimensionner(dialogue.FileName, 800);
+            Erreur = "";
+        }
+        catch (Exception)
+        {
+            Erreur = "Impossible de lire cette image. Choisis un fichier JPG, PNG ou BMP.";
+        }
+    }
+
     private void AjouterLigne()
     {
         if (TypeChoisi == null || ServiceChoisi == null || PrixCourant == null) return;
@@ -394,6 +437,7 @@ public class DepotViewModel : ViewModelBase
             PrixUnitaire = PrixCourant.Value,   // copié maintenant : un futur changement de tarif ne touche pas cette commande
             Couleur = string.IsNullOrWhiteSpace(Couleur) ? null : Couleur.Trim(),
             Remarque = string.IsNullOrWhiteSpace(RemarqueLigne) ? null : RemarqueLigne.Trim(),
+            Photo = PhotoCourante,
             TypeVetementNom = TypeChoisi.Nom,
             ServiceNom = ServiceChoisi.Nom
         });
@@ -401,6 +445,7 @@ public class DepotViewModel : ViewModelBase
         Quantite = 1;
         Couleur = "";
         RemarqueLigne = "";
+        PhotoCourante = null;
         Erreur = "";
     }
 
@@ -468,6 +513,7 @@ public class DepotViewModel : ViewModelBase
         Quantite = 1;
         Couleur = "";
         RemarqueLigne = "";
+        PhotoCourante = null;
         TypeChoisi = null;
         ServiceChoisi = null;
         Recherche = "";
