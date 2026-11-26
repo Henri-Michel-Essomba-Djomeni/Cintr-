@@ -230,7 +230,7 @@ public class IncidentsViewModel : ViewModelBase
 
             TicketSaisi = "";
             DescriptionSaisie = "";
-            MessageSucces = $"Incident enregistré pour le ticket {ticket}.";
+            MessageService.Succes($"Incident enregistré pour le ticket {ticket}.");
             ChargerListes();
         }
         catch (Exception ex)
@@ -268,7 +268,7 @@ public class IncidentsViewModel : ViewModelBase
         {
             IncidentRepository.Resoudre(selection.Id, resolution);
             ResolutionSaisie = "";
-            MessageSucces = $"Incident du ticket {selection.Ticket} marqué comme résolu.";
+            MessageService.Succes($"Incident du ticket {selection.Ticket} marqué comme résolu.");
             ChargerListes();
         }
         catch (Exception ex)

@@ -114,6 +114,13 @@ public class CaisseViewModel : ViewModelBase
     public string NbPaiementsTexte { get => _nbPaiementsTexte; private set => SetProperty(ref _nbPaiementsTexte, value); }
     public string TotalImpayesTexte { get => _totalImpayesTexte; private set => SetProperty(ref _totalImpayesTexte, value); }
 
+        // Valeurs numériques pour les compteurs animés (CountUpText)
+    private decimal _total, _especes, _mobileMoney, _carte, _totalImpayes;
+    public decimal Total { get => _total; private set => SetProperty(ref _total, value); }
+    public decimal Especes { get => _especes; private set => SetProperty(ref _especes, value); }
+    public decimal MobileMoney { get => _mobileMoney; private set => SetProperty(ref _mobileMoney, value); }
+    public decimal Carte { get => _carte; private set => SetProperty(ref _carte, value); }
+    public decimal TotalImpayes { get => _totalImpayes; private set => SetProperty(ref _totalImpayes, value); }
     public bool SansPaiement => Paiements.Count == 0;
     public bool SansImpaye => Impayes.Count == 0;
 
@@ -152,6 +159,10 @@ public class CaisseViewModel : ViewModelBase
             EspecesTexte = Fcfa(resume.TotalEspeces);
             MobileMoneyTexte = Fcfa(resume.TotalMobileMoney);
             CarteTexte = Fcfa(resume.TotalCarte);
+            Total = resume.Total;
+            Especes = resume.TotalEspeces;
+            MobileMoney = resume.TotalMobileMoney;
+            Carte = resume.TotalCarte;
             NbPaiementsTexte = resume.NbPaiements > 1
                 ? $"{resume.NbPaiements} paiements"
                 : $"{resume.NbPaiements} paiement";
@@ -186,6 +197,7 @@ public class CaisseViewModel : ViewModelBase
                 });
             }
             TotalImpayesTexte = Fcfa(totalImpayes);
+                        TotalImpayes = totalImpayes;
         }
         catch (Exception ex)
         {

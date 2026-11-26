@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Cintre.App.Views.IncidentsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
@@ -97,7 +98,7 @@
             <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
                     Visibility="{Binding OngletIncidents, Converter={StaticResource BoolVis}}">
                 <StackPanel>
-                    <CheckBox Content="Afficher seulement les incidents ouverts"
+                    <CheckBox Style="{StaticResource CaseCocher}" Content="Afficher seulement les incidents ouverts"
                               IsChecked="{Binding SeulementOuverts}" Margin="0,0,0,12"/>
 
                     <DataGrid ItemsSource="{Binding Incidents}"
@@ -118,9 +119,10 @@
                             <DataGridTextColumn Header="Statut" Binding="{Binding Statut}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
-                               Text="Aucun incident à afficher."
-                               Visibility="{Binding SansIncident, Converter={StaticResource BoolVis}}"/>
+                    <controls:EmptyState Icone="{StaticResource IconIncidents}"
+                                         Titre="Aucun incident"
+                                         Message="Les incidents déclarés apparaîtront ici."
+                                         Visibility="{Binding SansIncident, Converter={StaticResource BoolVis}}"/>
 
                     <!-- Détail et résolution de l'incident sélectionné -->
                     <StackPanel Margin="0,16,0,0"
@@ -168,9 +170,10 @@
                             <DataGridTextColumn Header="Reste à payer" Binding="{Binding Reste}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Style="{StaticResource Legende}" Margin="0,8,0,0"
-                               Text="Aucun linge abandonné."
-                               Visibility="{Binding SansAbandon, Converter={StaticResource BoolVis}}"/>
+                    <controls:EmptyState Icone="{StaticResource IconCoche}"
+                                         Titre="Aucun linge abandonné"
+                                         Message="Aucune commande prête n'attend depuis trop longtemps."
+                                         Visibility="{Binding SansAbandon, Converter={StaticResource BoolVis}}"/>
                 </StackPanel>
             </Border>
 
