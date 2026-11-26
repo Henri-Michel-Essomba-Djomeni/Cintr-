@@ -62,7 +62,14 @@ public class ParametresViewModel : ViewModelBase
 
     private void OuvrirServeur()
     {
-        var fenetre = new ConnexionBaseWindow { Owner = Application.Current.MainWindow };
+        var fenetre = new ConnexionBaseWindow();
+
+        // On cherche la vraie fenêtre principale : Application.Current.MainWindow
+        // peut être vide ou pointer sur la fenêtre qu'on vient de créer
+        var principale = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+        if (principale != null)
+            fenetre.Owner = principale;
+
         if (fenetre.ShowDialog() == true)
         {
             Charger();   // relit les paramètres depuis le serveur choisi
