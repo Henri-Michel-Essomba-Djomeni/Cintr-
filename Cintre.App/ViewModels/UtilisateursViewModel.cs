@@ -15,10 +15,11 @@ public class UtilisateursViewModel : ViewModelBase
     private Utilisateur? _selection;
     private int _idEnEdition;                 // 0 = nouveau compte
     private bool _nouveauCompte = true;
+    private bool _sansUtilisateur;
     private string _nom = "", _login = "";
     private RoleUtilisateur _role = RoleUtilisateur.Operateur;
     private string _texteBasculer = "Désactiver";
-    private string _messageErreur = "", _messageSucces = "";
+    private string _messageErreur = "";
 
     public ObservableCollection<Utilisateur> Utilisateurs { get; } = new();
     public Array Roles { get; } = Enum.GetValues(typeof(RoleUtilisateur));
@@ -43,12 +44,12 @@ public class UtilisateursViewModel : ViewModelBase
     }
 
     public bool NouveauCompte { get => _nouveauCompte; set => SetProperty(ref _nouveauCompte, value); }
+    public bool SansUtilisateur { get => _sansUtilisateur; set => SetProperty(ref _sansUtilisateur, value); }
     public string Nom { get => _nom; set => SetProperty(ref _nom, value); }
     public string Login { get => _login; set => SetProperty(ref _login, value); }
     public RoleUtilisateur Role { get => _role; set => SetProperty(ref _role, value); }
     public string TexteBasculer { get => _texteBasculer; set => SetProperty(ref _texteBasculer, value); }
     public string MessageErreur { get => _messageErreur; set => SetProperty(ref _messageErreur, value); }
-    public string MessageSucces { get => _messageSucces; set => SetProperty(ref _messageSucces, value); }
 
     public RelayCommand NouveauCommand { get; }
     public RelayCommand EnregistrerCommand { get; }
@@ -99,6 +100,8 @@ public class UtilisateursViewModel : ViewModelBase
             foreach (var u in tous)
                 Utilisateurs.Add(u);
 
+            SansUtilisateur = Utilisateurs.Count == 0;
+
             Selection = idASelectionner == null
                 ? null
                 : Utilisateurs.FirstOrDefault(u => u.Id == idASelectionner);
@@ -112,7 +115,6 @@ public class UtilisateursViewModel : ViewModelBase
     private void ChargerFormulaire(Utilisateur? u)
     {
         MessageErreur = "";
-        MessageSucces = "";
 
         if (u == null)
         {
@@ -148,7 +150,6 @@ public class UtilisateursViewModel : ViewModelBase
     {
         if (!_autorise) return;
         MessageErreur = "";
-        MessageSucces = "";
 
         if (string.IsNullOrWhiteSpace(Nom))
         {
@@ -189,7 +190,7 @@ public class UtilisateursViewModel : ViewModelBase
         {
             var id = UtilisateurRepository.Ajouter(u);
             ChargerListe(id);
-            MessageSucces = $"Compte « {login} » créé.";
+            ToastService.Succes($"Compte « {login} » créé.");
         }
         catch (PostgresException ex) when (ex.SqlState == "23505")   // violation d'unicité
         {
@@ -222,7 +223,7 @@ public class UtilisateursViewModel : ViewModelBase
                 Role = Role
             });
             ChargerListe(_idEnEdition);
-            MessageSucces = "Modifications enregistrées.";
+            ToastService.Succes("Modifications enregistrées.");
         }
         catch (Exception ex)
         {
@@ -234,7 +235,6 @@ public class UtilisateursViewModel : ViewModelBase
     {
         if (!_autorise) return;
         MessageErreur = "";
-        MessageSucces = "";
 
         var u = Selection;
         if (u == null)
@@ -255,7 +255,7 @@ public class UtilisateursViewModel : ViewModelBase
             var nouvelEtat = !u.Actif;
             UtilisateurRepository.ChangerEtat(u.Id, nouvelEtat);
             ChargerListe(u.Id);
-            MessageSucces = nouvelEtat ? "Compte activé." : "Compte désactivé.";
+            ToastService.Succes(nouvelEtat ? "Compte activé." : "Compte désactivé.");
         }
         catch (Exception ex)
         {
@@ -268,7 +268,6 @@ public class UtilisateursViewModel : ViewModelBase
     {
         if (!_autorise) return;
         MessageErreur = "";
-        MessageSucces = "";
 
         var u = Selection;
         if (u == null)
@@ -287,7 +286,7 @@ public class UtilisateursViewModel : ViewModelBase
             UtilisateurRepository.ChangerMotDePasse(u.Id, AuthService.Hacher(MotDePasseForm));
             var login = u.Login;
             EffacerMotsDePasse?.Invoke();
-            MessageSucces = $"Mot de passe de « {login} » réinitialisé.";
+            ToastService.Succes($"Mot de passe de « {login} » réinitialisé.");
         }
         catch (Exception ex)
         {
@@ -300,7 +299,6 @@ public class UtilisateursViewModel : ViewModelBase
     {
         if (!_autorise) return;
         MessageErreur = "";
-        MessageSucces = "";
 
         var courant = Session.UtilisateurCourant;
         if (courant == null)
@@ -334,7 +332,7 @@ public class UtilisateursViewModel : ViewModelBase
             courant.MotDePasseHash = hash;
 
             EffacerMotsDePasse?.Invoke();
-            MessageSucces = "Ton mot de passe a été changé.";
+            ToastService.Succes("Ton mot de passe a été changé.");
         }
         catch (Exception ex)
         {

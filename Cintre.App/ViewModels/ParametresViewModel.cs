@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
+using System.Windows;
 using Cintre.App.Data;
 using Cintre.App.Helpers;
 using Cintre.App.Services;
-using System.Windows;
 using Cintre.App.Views;
 
 namespace Cintre.App.ViewModels;
@@ -12,7 +12,7 @@ public class ParametresViewModel : ViewModelBase
 {
     private string _nomPressing = "", _adresse = "", _telephone = "", _devise = "";
     private string _delai = "", _supplement = "", _seuil = "", _remise = "", _jours = "";
-    private string _messageErreur = "", _messageSucces = "";
+    private string _messageErreur = "";
 
     public string NomPressing { get => _nomPressing; set => SetProperty(ref _nomPressing, value); }
     public string Adresse { get => _adresse; set => SetProperty(ref _adresse, value); }
@@ -26,7 +26,6 @@ public class ParametresViewModel : ViewModelBase
     public string JoursAbandon { get => _jours; set => SetProperty(ref _jours, value); }
 
     public string MessageErreur { get => _messageErreur; set => SetProperty(ref _messageErreur, value); }
-    public string MessageSucces { get => _messageSucces; set => SetProperty(ref _messageSucces, value); }
 
     public RelayCommand EnregistrerCommand { get; }
     public RelayCommand OuvrirServeurCommand { get; }
@@ -60,21 +59,28 @@ public class ParametresViewModel : ViewModelBase
         RemiseFidelitePourcent = ParametresService.RemiseFideliteMax.ToString(CultureInfo.InvariantCulture);
         JoursAbandon = ParametresService.JoursAbandon.ToString(CultureInfo.InvariantCulture);
     }
+
     private void OuvrirServeur()
     {
-        var fenetre = new ConnexionBaseWindow { Owner = Application.Current.MainWindow };
+        var fenetre = new ConnexionBaseWindow();
+
+        // On cherche la vraie fenêtre principale : Application.Current.MainWindow
+        // peut être vide ou pointer sur la fenêtre qu'on vient de créer
+        var principale = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+        if (principale != null)
+            fenetre.Owner = principale;
+
         if (fenetre.ShowDialog() == true)
         {
             Charger();   // relit les paramètres depuis le serveur choisi
             MessageErreur = "";
-            MessageSucces = "Connexion à la base enregistrée.";
+            ToastService.Succes("Connexion à la base enregistrée.");
         }
     }
 
     private void Enregistrer()
     {
         MessageErreur = "";
-        MessageSucces = "";
 
         if (string.IsNullOrWhiteSpace(NomPressing))
         {
@@ -125,7 +131,7 @@ public class ParametresViewModel : ViewModelBase
             ParametreRepository.Definir("jours_abandon", jours.ToString(CultureInfo.InvariantCulture));
 
             ParametresService.Recharger();   // les autres modules voient les nouvelles valeurs
-            MessageSucces = "Paramètres enregistrés.";
+            ToastService.Succes("Paramètres enregistrés.");
         }
         catch (Exception)
         {
