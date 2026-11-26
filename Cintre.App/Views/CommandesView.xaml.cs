@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cintre.App.Helpers;
+using System;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,7 +12,13 @@ public partial class CommandesView : UserControl
     public CommandesView()
     {
         InitializeComponent();
+        AnimationHelper.FadeIn(this);
         DataContext = new CommandesViewModel();
+    }
+    // le badge rouge "En retard" pulse doucement pour attirer l'oeil
+    private void BadgeRetard_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+        AnimationHelper.Pulse((System.Windows.FrameworkElement)sender);
     }
 }
 
