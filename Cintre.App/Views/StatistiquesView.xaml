@@ -1,8 +1,195 @@
-﻿<UserControl x:Class="Cintre.App.Views.StatistiquesView"
+<UserControl x:Class="Cintre.App.Views.StatistiquesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="Statistiques" Style="{StaticResource TitrePage}"/>
-        <TextBlock Text="Écran en construction." Style="{StaticResource Legende}" Margin="0,8,0,0"/>
-    </StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/ThemeLavea.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+            <!-- Bouton de période : pastille, sable quand elle est choisie -->
+            <Style x:Key="LavPeriode" TargetType="RadioButton">
+                <Setter Property="Foreground" Value="{StaticResource LavPaleBrush}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Margin" Value="0,0,8,0"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border x:Name="fond" Background="Transparent" BorderBrush="#66CFE3E8"
+                                    BorderThickness="1.5" CornerRadius="19" Padding="18,8">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="fond" Property="Background" Value="#1AFFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="fond" Property="Background" Value="{StaticResource LavSableBrush}"/>
+                                    <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource LavSableBrush}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource LavEncreBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Tuile de chiffre du jour -->
+            <Style x:Key="LavTuile" TargetType="Border" BasedOn="{StaticResource LavCarte}">
+                <Setter Property="Padding" Value="16,14"/>
+                <Setter Property="CornerRadius" Value="18"/>
+                <Setter Property="Margin" Value="6"/>
+            </Style>
+
+            <Style x:Key="LavTuileChiffre" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="Foreground" Value="{StaticResource LavPetrolBrush}"/>
+                <Setter Property="Margin" Value="0,6,0,0"/>
+            </Style>
+
+            <Style x:Key="LavTuileLabel" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="{StaticResource LavDiscretBrush}"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Fond pétrole animé -->
+        <controls:FondAnime/>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="36,32,36,28">
+
+                <!-- ================= EN-TÊTE + PÉRIODE ================= -->
+                <TextBlock Text="Statistiques" Style="{StaticResource LavTitre}"/>
+                <TextBlock Text="Les chiffres pour piloter le pressing." Style="{StaticResource LavSousTitre}"
+                           Margin="0,4,0,0"/>
+
+                <WrapPanel Margin="0,18,0,0">
+                    <RadioButton Content="7 jours" GroupName="Periode" Style="{StaticResource LavPeriode}"
+                                 IsChecked="{Binding Est7Jours, Mode=TwoWay}"/>
+                    <RadioButton Content="30 jours" GroupName="Periode" Style="{StaticResource LavPeriode}"
+                                 IsChecked="{Binding Est30Jours, Mode=TwoWay}"/>
+                    <RadioButton Content="Personnalisé" GroupName="Periode" Style="{StaticResource LavPeriode}"
+                                 IsChecked="{Binding EstPerso, Mode=TwoWay}"/>
+
+                    <!-- Dates, seulement en mode personnalisé -->
+                    <Border Background="{StaticResource LavCremeBrush}" CornerRadius="14" Padding="10,4"
+                            Margin="4,0,8,0" VerticalAlignment="Center"
+                            Visibility="{Binding EstPerso, Converter={StaticResource BoolVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Du" VerticalAlignment="Center" Margin="4,0,8,0"
+                                       Foreground="{StaticResource LavDiscretBrush}" FontWeight="SemiBold"/>
+                            <DatePicker SelectedDate="{Binding DateDebut, Mode=TwoWay}" Width="130"/>
+                            <TextBlock Text="au" VerticalAlignment="Center" Margin="12,0,8,0"
+                                       Foreground="{StaticResource LavDiscretBrush}" FontWeight="SemiBold"/>
+                            <DatePicker SelectedDate="{Binding DateFin, Mode=TwoWay}" Width="130"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="Actualiser" Style="{StaticResource LavBoutonSable}" MinHeight="38"
+                            Padding="18,0" Command="{Binding RafraichirCommand}"/>
+                </WrapPanel>
+
+                <!-- ================= CHIFFRES DU JOUR ================= -->
+                <UniformGrid Columns="6" Margin="-6,18,-6,0">
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Dépôts du jour" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding DepotsJour}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Retraits du jour" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding RetraitsJour}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Recette du jour (FCFA)" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding RecetteJour}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Commandes en retard" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding EnRetard}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Prêtes, non retirées" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding PretsNonRetires}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavTuile}">
+                        <StackPanel>
+                            <TextBlock Text="Impayés (FCFA)" Style="{StaticResource LavTuileLabel}"/>
+                            <controls:CountUpText Valeur="{Binding Impayes}" Style="{StaticResource LavTuileChiffre}"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- ================= GRAPHIQUE DES RECETTES ================= -->
+                <Border Style="{StaticResource LavCarte}" Margin="0,12,0,0">
+                    <StackPanel>
+                        <Grid>
+                            <StackPanel>
+                                <TextBlock Text="Recettes par jour" Style="{StaticResource LavTitreCarte}"/>
+                                <TextBlock Text="{Binding TextePeriode}" Style="{StaticResource LavTexteDiscret}"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding TexteTotal}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       FontFamily="Segoe UI Semibold" FontSize="18"
+                                       Foreground="{StaticResource LavPetrolBrush}"/>
+                        </Grid>
+                        <controls:GraphiqueBarres Height="260" Margin="0,18,0,0"
+                                                  Donnees="{Binding Recettes}"
+                                                  MessageVide="Aucune recette sur cette période."/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ================= CLASSEMENTS ================= -->
+                <UniformGrid Columns="3" Margin="-6,6,-6,0">
+                    <Border Style="{StaticResource LavCarte}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="Services les plus demandés" Style="{StaticResource LavTitreCarte}" FontSize="17"/>
+                            <TextBlock Text="Nombre de vêtements, depuis le début" Style="{StaticResource LavTexteDiscret}"
+                                       Margin="0,2,0,16"/>
+                            <controls:ListeClassement Donnees="{Binding TopServices}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavCarte}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="Clients les plus dépensiers" Style="{StaticResource LavTitreCarte}" FontSize="17"/>
+                            <TextBlock Text="Total des commandes, depuis le début" Style="{StaticResource LavTexteDiscret}"
+                                       Margin="0,2,0,16"/>
+                            <controls:ListeClassement Donnees="{Binding TopClients}" Suffixe=" FCFA"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource LavCarte}" Margin="6">
+                        <StackPanel>
+                            <TextBlock Text="Répartition des statuts" Style="{StaticResource LavTitreCarte}" FontSize="17"/>
+                            <TextBlock Text="Nombre de commandes par statut" Style="{StaticResource LavTexteDiscret}"
+                                       Margin="0,2,0,16"/>
+                            <controls:ListeClassement Donnees="{Binding Statuts}"
+                                                      CouleurBarre="{StaticResource LavPetrolClairBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

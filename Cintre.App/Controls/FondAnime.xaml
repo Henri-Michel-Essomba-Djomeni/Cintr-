@@ -1,0 +1,16 @@
+<UserControl x:Class="Cintre.App.Controls.FondAnime"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsHitTestVisible="False">
+    <!-- Fond pétrole avec de petits vêtements qui montent en flottant -->
+    <Border CornerRadius="24" ClipToBounds="True">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#06303B" Offset="0"/>
+                <GradientStop Color="#0B4F60" Offset="0.62"/>
+                <GradientStop Color="#0F6677" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <Canvas x:Name="Scene" ClipToBounds="True"/>
+    </Border>
+</UserControl>
