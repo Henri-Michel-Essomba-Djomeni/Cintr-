@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="Cintre.App.Views.CommandesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls"
+             xmlns:local="clr-namespace:Cintre.App.Views">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+        <local:StatutTexteConverter x:Key="StatutTexte"/>
+    </UserControl.Resources>
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Commandes" Style="{StaticResource TitrePage}"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,16">
+            <TextBox Width="240" Text="{Binding Texte, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Tous" Margin="12,0,0,0" Command="{Binding FiltrerStatutCommand}" CommandParameter="Tous"/>
+            <Button Content="Reçu" Margin="8,0,0,0" Command="{Binding FiltrerStatutCommand}" CommandParameter="Recu"/>
+            <Button Content="En traitement" Margin="8,0,0,0" Command="{Binding FiltrerStatutCommand}" CommandParameter="EnTraitement"/>
+            <Button Content="Prêt" Margin="8,0,0,0" Command="{Binding FiltrerStatutCommand}" CommandParameter="Pret"/>
+            <Button Content="Retiré" Margin="8,0,0,0" Command="{Binding FiltrerStatutCommand}" CommandParameter="Retire"/>
+            <CheckBox Content="En retard seulement" Margin="16,0,0,0" VerticalAlignment="Center"
+                      IsChecked="{Binding SeulementRetard}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <DataGrid ItemsSource="{Binding Commandes}" SelectedItem="{Binding Selection, Mode=TwoWay}"
+                      AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single">
+                <DataGrid.Columns>
+    <DataGridTextColumn Header="TICKET" Binding="{Binding NumeroTicket}" Width="Auto" MinWidth="150"/>
+    <DataGridTextColumn Header="CLIENT" Binding="{Binding ClientNom}" Width="*" MinWidth="100"/>
+    <DataGridTextColumn Header="PRÉVUE" Binding="{Binding DatePrevue, StringFormat=dd/MM/yyyy}" Width="Auto" MinWidth="95"/>
+    <DataGridTextColumn Header="TOTAL" Binding="{Binding MontantTotal, StringFormat={}{0:N0}, ConverterCulture=fr-FR}" Width="Auto" MinWidth="70"/>
+    <DataGridTextColumn Header="RESTE" Binding="{Binding Reste, StringFormat={}{0:N0}, ConverterCulture=fr-FR}" Width="Auto" MinWidth="70"/>
+    <DataGridTextColumn Header="STATUT" Binding="{Binding Statut, Converter={StaticResource StatutTexte}}" Width="Auto" MinWidth="105"/>
+</DataGrid.Columns>
+            </DataGrid>
+
+            <controls:EmptyState Titre="Aucune commande" Message="Aucune commande ne correspond à ta recherche."
+                                 Visibility="{Binding AucuneCommande, Converter={StaticResource BoolVis}}"/>
+
+            <Border Grid.Column="1" Width="340" Margin="16,0,0,0" Padding="16" CornerRadius="12" Background="White"
+                    Visibility="{Binding AUneSelection, Converter={StaticResource BoolVis}}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Detail.NumeroTicket}" FontSize="18" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Detail.ClientNom}" Style="{StaticResource Legende}"/>
+                        <controls:ConveyorStatus Statut="{Binding Detail.Statut}" Margin="0,12"/>
+                        <TextBlock Text="En retard" Foreground="#D64545" FontWeight="SemiBold"
+                                   Visibility="{Binding Detail.EnRetard, Converter={StaticResource BoolVis}}"/>
+
+                        <TextBlock Text="ARTICLES" Style="{StaticResource Legende}" Margin="0,12,0,4"/>
+                        <ItemsControl ItemsSource="{Binding Detail.Lignes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="{Binding Quantite, Mode=OneWay}"/><Run Text=" × "/>
+                                        <Run Text="{Binding TypeVetementNom, Mode=OneWay}"/><Run Text=" · "/>
+                                        <Run Text="{Binding ServiceNom, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="{Binding Detail.MontantTotal, StringFormat='Total : {0:N0} FCFA'}" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                        <TextBlock Text="{Binding Detail.Reste, StringFormat='Reste à payer : {0:N0} FCFA'}"/>
+
+                        <TextBlock Text="HISTORIQUE" Style="{StaticResource Legende}" Margin="0,12,0,4"/>
+                        <ItemsControl ItemsSource="{Binding Historique}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="0,2">
+                                        <Run Text="{Binding DateChangement, StringFormat=dd/MM HH:mm, Mode=OneWay}"/><Run Text=" · "/>
+                                        <Run Text="{Binding NouveauStatut, Converter={StaticResource StatutTexte}, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Content="{Binding TexteBoutonSuivant}" Margin="0,16,0,0"
+                                Command="{Binding PasserSuivantCommand}"
+                                Visibility="{Binding PeutPasserSuivant, Converter={StaticResource BoolVis}}"/>
+                        <Button Content="Annuler la commande" Margin="0,8,0,0"
+                                Command="{Binding AnnulerCommand}"
+                                Visibility="{Binding PeutAnnuler, Converter={StaticResource BoolVis}}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

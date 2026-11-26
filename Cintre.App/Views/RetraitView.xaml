@@ -1,0 +1,209 @@
+﻿<UserControl x:Class="Cintre.App.Views.RetraitView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- Bouton radio en forme de pastille, pour le mode de paiement (propre à cet écran) -->
+        <Style x:Key="ChoixMode" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TexteBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="fond" Background="White"
+                                BorderBrush="{StaticResource BordureBrush}"
+                                BorderThickness="1.5" CornerRadius="8" Padding="18,10">
+                            <ContentPresenter x:Name="contenu"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="fond" Property="Background" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource PrimaireBrush}"/>
+                                <Setter TargetName="contenu" Property="TextElement.Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="900" HorizontalAlignment="Left" Margin="0,0,0,24">
+
+            <TextBlock Text="Retrait et paiement" Style="{StaticResource TitrePage}"/>
+
+            <!-- ===== Recherche du ticket ===== -->
+            <TextBlock Text="N° de ticket" Style="{StaticResource Legende}" Margin="0,16,0,6"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="ChampTicket" Style="{StaticResource ChampTexte}"
+                         FontSize="18" CharacterCasing="Upper"
+                         Text="{Binding TicketSaisi, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding RechercherCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Grid.Column="1" Content="Rechercher" Margin="12,0,0,0"
+                        Style="{StaticResource BoutonPrimaire}"
+                        Command="{Binding RechercherCommand}"/>
+            </Grid>
+
+            <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"
+                       Visibility="{Binding AErreur, Converter={StaticResource BoolVis}}"/>
+
+            <controls:EmptyState Icone="{StaticResource IconRetrait}"
+                                 Titre="Aucun ticket sélectionné"
+                                 Message="Saisis le numéro du ticket remis au client, puis appuie sur Entrée."
+                                 Visibility="{Binding SansResultat, Converter={StaticResource BoolVis}}"/>
+
+            <!-- ===== Carte résultat ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding AResultat, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ClientNom}" Style="{StaticResource TitreCarte}"/>
+                            <TextBlock Text="{Binding NumeroTicket}" Style="{StaticResource Legende}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Border Grid.Column="1" Style="{StaticResource Badge}"
+                                Background="{Binding CouleurStatut}" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding StatutTexte}" Style="{StaticResource BadgeTexte}"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Articles -->
+                    <ItemsControl ItemsSource="{Binding Lignes}" Margin="0,16,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Texte}" FontSize="14" TextWrapping="Wrap"
+                                               Foreground="{StaticResource TexteBrush}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Valeur}" FontSize="14"
+                                               Foreground="{StaticResource TexteBrush}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Border Height="1" Background="{StaticResource BordureBrush}" Margin="0,16"/>
+
+                    <!-- Total, payé, reste -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Total" Style="{StaticResource Legende}"/>
+                            <TextBlock Text="{Binding TotalTexte}" Style="{StaticResource TitreCarte}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Déjà payé" Style="{StaticResource Legende}"/>
+                            <TextBlock Text="{Binding PayeTexte}" Style="{StaticResource TitreCarte}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Reste à payer" Style="{StaticResource Legende}"/>
+                            <TextBlock Text="{Binding ResteTexte}" Style="{StaticResource TitrePage}"
+                                       Foreground="{Binding CouleurReste}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Historique des paiements (acompte, solde...) -->
+                    <ItemsControl ItemsSource="{Binding Paiements}" Margin="0,16,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Texte}" Style="{StaticResource Legende}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Valeur}" Style="{StaticResource Legende}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Zone paiement ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding PeutPayer, Converter={StaticResource BoolVis}}">
+                <StackPanel>
+                    <TextBlock Text="Paiement" Style="{StaticResource TitreCarte}"/>
+
+                    <TextBlock Text="Montant (FCFA)" Style="{StaticResource Legende}" Margin="0,12,0,6"/>
+                    <TextBox Style="{StaticResource ChampTexte}"
+                             Text="{Binding MontantSaisi, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Mode de paiement" Style="{StaticResource Legende}" Margin="0,12,0,6"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton Style="{StaticResource ChoixMode}" GroupName="ModePaiement"
+                                     Content="Espèces" Margin="0,0,8,0"
+                                     IsChecked="{Binding ModeEspeces}"/>
+                        <RadioButton Style="{StaticResource ChoixMode}" GroupName="ModePaiement"
+                                     Content="Mobile Money" Margin="0,0,8,0"
+                                     IsChecked="{Binding ModeMobileMoney}"/>
+                        <RadioButton Style="{StaticResource ChoixMode}" GroupName="ModePaiement"
+                                     Content="Carte"
+                                     IsChecked="{Binding ModeCarte}"/>
+                    </StackPanel>
+
+                    <Button Content="Encaisser" HorizontalAlignment="Right" Margin="0,16,0,0"
+                            Style="{StaticResource BoutonPrimaire}"
+                            Command="{Binding EncaisserCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Remise du linge ===== -->
+            <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
+                    Visibility="{Binding AResultat, Converter={StaticResource BoolVis}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Remise du linge" Style="{StaticResource TitreCarte}"/>
+                        <TextBlock Text="{Binding AideRetrait}" Style="{StaticResource Legende}"
+                                   Margin="0,4,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Remettre le linge" Margin="16,0,0,0"
+                            Style="{StaticResource BoutonAccent}"
+                            Command="{Binding RemettreCommand}"/>
+                </Grid>
+            </Border>
+
+            <!-- ===== Bandeau de succès (animé depuis le code-behind) ===== -->
+            <Border x:Name="BandeauSucces" Margin="0,16,0,0" Padding="16,12" CornerRadius="12"
+                    Background="{StaticResource SuccesBrush}"
+                    Visibility="{Binding ASucces, Converter={StaticResource BoolVis}}">
+                <TextBlock Text="{Binding MessageSucces}" Foreground="White"
+                           FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

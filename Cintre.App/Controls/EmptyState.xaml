@@ -1,0 +1,24 @@
+<UserControl x:Class="Cintre.App.Controls.EmptyState"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="racine">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420" Margin="24">
+        <Grid Width="104" Height="104" HorizontalAlignment="Center">
+            <Ellipse Fill="{StaticResource SelectionBrush}"/>
+            <Ellipse Fill="{StaticResource SurvolBrush}" Margin="14"/>
+            <Viewbox Width="40" Height="40">
+                <Canvas Width="24" Height="24">
+                    <Path Data="{Binding Icone, ElementName=racine}"
+                          Stroke="{StaticResource PrimaireBrush}" StrokeThickness="1.8"
+                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                </Canvas>
+            </Viewbox>
+        </Grid>
+        <TextBlock Text="{Binding Titre, ElementName=racine}" Style="{StaticResource TitreCarte}"
+                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,20,0,0"/>
+        <TextBlock Text="{Binding Message, ElementName=racine}" TextAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{StaticResource TexteDiscretBrush}" Margin="0,8,0,0"/>
+        <ContentPresenter Content="{Binding ContenuAction, ElementName=racine}"
+                          HorizontalAlignment="Center" Margin="0,20,0,0"/>
+    </StackPanel>
+</UserControl>
