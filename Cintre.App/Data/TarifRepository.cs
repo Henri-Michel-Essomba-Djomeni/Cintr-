@@ -89,4 +89,12 @@ public static class TarifRepository
               ON CONFLICT (service_id, type_vetement_id) DO UPDATE SET prix = EXCLUDED.prix",
             new { serviceId, typeVetementId, prix });
     }
+
+    // Retire le tarif : le service n'est plus proposé pour ce vêtement
+    public static void RetirerPrix(int serviceId, int typeVetementId)
+    {
+        using var cx = DbConnectionFactory.Creer();
+        cx.Execute("DELETE FROM tarif WHERE service_id = @serviceId AND type_vetement_id = @typeVetementId",
+                   new { serviceId, typeVetementId });
+    }
 }

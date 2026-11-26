@@ -1,8 +1,322 @@
-﻿<UserControl x:Class="Cintre.App.Views.TarifsView"
+<UserControl x:Class="Cintre.App.Views.TarifsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="Tarifs" Style="{StaticResource TitrePage}"/>
-        <TextBlock Text="Écran en construction." Style="{StaticResource Legende}" Margin="0,8,0,0"/>
-    </StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/ThemeLavea.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Une case de la grille : cliquable ; sable quand le prix a changé ; tiret quand il n'y a pas de prix -->
+            <Style x:Key="LavCellule" TargetType="Button">
+                <Setter Property="Width" Value="122"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Margin" Value="4"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{StaticResource LavEncreBrush}"/>
+                <Setter Property="Background" Value="{StaticResource LavChampBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource LavBordureBrush}"/>
+                <Setter Property="BorderThickness" Value="1.5"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="fond" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="fond" Property="BorderBrush" Value="{StaticResource LavPetrolClairBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Prix}" Value="{x:Null}">
+                        <Setter Property="Foreground" Value="{StaticResource LavDiscretBrush}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Modifiee}" Value="True">
+                        <Setter Property="Background" Value="{StaticResource LavSableClairBrush}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource LavSableBrush}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Fond pétrole animé -->
+        <controls:FondAnime/>
+
+        <Grid Margin="36,32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,18">
+                <TextBlock Text="Tarifs" Style="{StaticResource LavTitre}"/>
+                <TextBlock Text="Gérez vos services, vos types de vêtements et la grille des prix."
+                           Style="{StaticResource LavSousTitre}" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <TabControl Grid.Row="1">
+
+                <!-- ================= SERVICES ================= -->
+                <TabItem Header="🧼  Services">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="320"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="420"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource LavCarte}" Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Margin="6,0,6,14">
+                                    <TextBlock Text="Vos services" Style="{StaticResource LavTitreCarte}" VerticalAlignment="Center"/>
+                                    <Button Content="+ Nouveau" HorizontalAlignment="Right" MinHeight="38"
+                                            Style="{StaticResource LavBoutonSable}"
+                                            Command="{Binding NouveauServiceCommand}"/>
+                                </Grid>
+                                <ListBox Grid.Row="1" Style="{StaticResource LavListe}"
+                                         ItemsSource="{Binding Services}"
+                                         SelectedItem="{Binding ServiceSelection, Mode=TwoWay}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.Style>
+                                                    <Style TargetType="Grid">
+                                                        <Style.Triggers>
+                                                            <!-- Service désactivé : grisé -->
+                                                            <DataTrigger Binding="{Binding Actif}" Value="False">
+                                                                <Setter Property="Opacity" Value="0.5"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Grid.Style>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Nom}" FontSize="15" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource LavEncreBrush}"/>
+                                                    <TextBlock Text="{Binding Description}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                                               Foreground="{StaticResource LavDiscretBrush}" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                <Border Grid.Column="1">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border" BasedOn="{StaticResource LavBadge}">
+                                                            <Setter Property="Background" Value="#C9B98A"/>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Actif}" Value="False">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="Inactif" FontSize="11" FontWeight="Bold"
+                                                               Foreground="{StaticResource LavEncreBrush}"/>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </Border>
+
+                        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                            <Border Style="{StaticResource LavCarte}" VerticalAlignment="Top" Margin="0,0,4,8">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding TitreService}" Style="{StaticResource LavTitreCarte}"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="Nom *" Style="{StaticResource LavLabel}"/>
+                                    <TextBox Style="{StaticResource LavChamp}"
+                                             Text="{Binding ServiceNom, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBlock Text="{Binding ServiceErreur}" Style="{StaticResource LavErreur}"/>
+                                    <TextBlock Text="Description" Style="{StaticResource LavLabel}"/>
+                                    <TextBox Style="{StaticResource LavChamp}"
+                                             Text="{Binding ServiceDescription, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <CheckBox Style="{StaticResource LavCase}" Margin="0,20,0,0"
+                                              Content="Service proposé au Dépôt"
+                                              IsChecked="{Binding ServiceActif}"/>
+                                    <Button Content="Enregistrer" Style="{StaticResource LavBouton}" Margin="0,22,0,0"
+                                            HorizontalAlignment="Left"
+                                            Command="{Binding EnregistrerServiceCommand}"/>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <!-- ================= TYPES DE VÊTEMENTS ================= -->
+                <TabItem Header="👕  Types de vêtements">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="320"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="420"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource LavCarte}" Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Types de vêtements" Style="{StaticResource LavTitreCarte}" Margin="6,0,6,14"/>
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding Types}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Padding="14,11" Margin="0,0,0,4" CornerRadius="12"
+                                                        Background="{StaticResource LavChampBrush}">
+                                                    <TextBlock Text="{Binding Nom}" FontSize="15" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource LavEncreBrush}"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource LavCarte}" VerticalAlignment="Top">
+                            <StackPanel>
+                                <TextBlock Text="Ajouter un type" Style="{StaticResource LavTitreCarte}"/>
+                                <TextBlock Text="Nom du type *" Style="{StaticResource LavLabel}"/>
+                                <TextBox Style="{StaticResource LavChamp}"
+                                         Text="{Binding TypeNom, UpdateSourceTrigger=PropertyChanged}">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Return" Command="{Binding AjouterTypeCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <TextBlock Text="{Binding TypeErreur}" Style="{StaticResource LavErreur}"/>
+                                <Button Content="Ajouter" Style="{StaticResource LavBoutonSable}" Margin="0,22,0,0"
+                                        HorizontalAlignment="Left" Command="{Binding AjouterTypeCommand}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- ================= GRILLE DES PRIX ================= -->
+                <TabItem Header="💶  Grille des prix">
+                    <Border Style="{StaticResource LavCarte}" Padding="22">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Prix en FCFA" Style="{StaticResource LavTitreCarte}"/>
+                                    <TextBlock Text="Cliquez sur une case pour modifier le prix. Une case vide veut dire que le service n'est pas proposé pour ce vêtement."
+                                               Style="{StaticResource LavTexteDiscret}" Margin="0,4,20,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <Button Content="Enregistrer" Style="{StaticResource LavBouton}"
+                                            Command="{Binding EnregistrerGrilleCommand}"/>
+                                    <TextBlock Text="{Binding TexteModifications}" FontSize="12" Margin="0,6,0,0"
+                                               HorizontalAlignment="Center" Foreground="{StaticResource LavDiscretBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <!-- En-têtes : un par service actif -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <Border Width="170"/>
+                                        <ItemsControl ItemsSource="{Binding Colonnes}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Nom}" Width="122" Margin="4,0" TextAlignment="Center"
+                                                               FontWeight="Bold" TextTrimming="CharacterEllipsis"
+                                                               Foreground="{StaticResource LavPetrolBrush}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <!-- Une ligne par type de vêtement -->
+                                    <ItemsControl ItemsSource="{Binding Lignes}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding TypeNom}" Width="170" VerticalAlignment="Center"
+                                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                               Foreground="{StaticResource LavEncreBrush}"/>
+                                                    <ItemsControl ItemsSource="{Binding Cellules}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Button Content="{Binding Texte}" Style="{StaticResource LavCellule}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Command="{Binding DataContext.EditerCelluleCommand,
+                                                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Petite saisie qui s'ouvre à l'endroit du clic sur une case -->
+        <Popup IsOpen="{Binding EditionOuverte, Mode=TwoWay}" Placement="MousePoint" StaysOpen="False"
+               AllowsTransparency="True" PopupAnimation="Fade" Opened="SaisiePopup_Opened">
+            <Border Style="{StaticResource LavCarte}" Padding="20" Margin="16" Width="280">
+                <StackPanel>
+                    <TextBlock Text="{Binding TitreEdition}" FontSize="15" FontWeight="Bold"
+                               Foreground="{StaticResource LavEncreBrush}" TextWrapping="Wrap"/>
+                    <TextBlock Text="Prix en FCFA" Style="{StaticResource LavLabel}"/>
+                    <TextBox x:Name="PrixBox" Style="{StaticResource LavChamp}"
+                             Text="{Binding SaisiePrix, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding ValiderPrixCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock Text="{Binding ErreurSaisie}" Style="{StaticResource LavErreur}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="Valider" Style="{StaticResource LavBoutonSable}" MinHeight="38"
+                                Command="{Binding ValiderPrixCommand}"/>
+                        <Button Content="Retirer" Style="{StaticResource LavBoutonContour}" MinHeight="38"
+                                Margin="10,0,0,0" Command="{Binding RetirerPrixCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
 </UserControl>
