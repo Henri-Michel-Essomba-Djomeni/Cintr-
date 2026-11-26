@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Cintre.App.Views.RetraitView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Cintre.App.Controls">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
@@ -63,9 +64,10 @@
             <TextBlock Style="{StaticResource MessageErreur}" Text="{Binding MessageErreur}"
                        Visibility="{Binding AErreur, Converter={StaticResource BoolVis}}"/>
 
-            <TextBlock Style="{StaticResource Legende}" Margin="0,16,0,0"
-                       Text="Saisis le numéro du ticket remis au client, puis appuie sur Entrée."
-                       Visibility="{Binding SansResultat, Converter={StaticResource BoolVis}}"/>
+            <controls:EmptyState Icone="{StaticResource IconRetrait}"
+                                 Titre="Aucun ticket sélectionné"
+                                 Message="Saisis le numéro du ticket remis au client, puis appuie sur Entrée."
+                                 Visibility="{Binding SansResultat, Converter={StaticResource BoolVis}}"/>
 
             <!-- ===== Carte résultat ===== -->
             <Border Style="{StaticResource Carte}" Margin="0,16,0,0"
