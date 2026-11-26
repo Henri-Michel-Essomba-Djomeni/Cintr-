@@ -484,9 +484,11 @@ public class DepotViewModel : ViewModelBase
             Lignes = Lignes.ToList()
         };
 
+        int idCommande = 0;
+
         try
         {
-            CommandeRepository.Creer(commande);
+            idCommande = CommandeRepository.Creer(commande);
         }
         catch (Exception ex)
         {
@@ -500,6 +502,18 @@ public class DepotViewModel : ViewModelBase
 
         Reinitialiser();
         Info = $"Dépôt enregistré : {commande.NumeroTicket} · total {commande.MontantTotal:N0} FCFA";
+        // Proposer l'impression du ticket (T22)
+try
+{
+    // on relit la commande pour avoir les lignes et le nom du client complets
+    var aImprimer = CommandeRepository.ObtenirParId(idCommande) ?? commande;
+    if (MessageService.Confirmer("Imprimer le ticket ?"))
+        TicketService.Imprimer(aImprimer);
+}
+catch (Exception ex)
+{
+    MessageService.Erreur("Impossible d'imprimer le ticket : " + ex.Message);
+}
     }
 
     // Retour à l'étape 1, prêt pour le client suivant
