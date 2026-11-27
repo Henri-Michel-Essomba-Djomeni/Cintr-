@@ -123,12 +123,12 @@
                 <DataGrid Grid.Row="2" ItemsSource="{Binding Lignes}" AutoGenerateColumns="False"
                           CanUserAddRows="False" IsReadOnly="True" HeadersVisibility="Column" MinHeight="120">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Vêtement" Binding="{Binding TypeVetementNom}" Width="*"/>
-                        <DataGridTextColumn Header="Service" Binding="{Binding ServiceNom}" Width="*"/>
-                        <DataGridTextColumn Header="Qté" Binding="{Binding Quantite}" Width="60"/>
+                        <DataGridTextColumn Header="Vêtement" Binding="{Binding TypeVetementNom}" Width="*" MinWidth="90"/>
+                        <DataGridTextColumn Header="Service" Binding="{Binding ServiceNom}" Width="*" MinWidth="90"/>
+                        <DataGridTextColumn Header="Qté" Binding="{Binding Quantite}" Width="70"/>
                         <DataGridTextColumn Header="Couleur" Binding="{Binding Couleur}" Width="100"/>
-                        <DataGridTextColumn Header="Prix" Binding="{Binding PrixUnitaire, StringFormat=N0}" Width="90"/>
-                        <DataGridTextColumn Header="Sous-total" Binding="{Binding SousTotal, StringFormat=N0}" Width="110"/>
+                        <DataGridTextColumn Header="Prix" Binding="{Binding PrixUnitaire, StringFormat=N0}" Width="110"/>
+                        <DataGridTextColumn Header="Sous-total" Binding="{Binding SousTotal, StringFormat=N0}" Width="130"/>
                         <DataGridTemplateColumn Header="Photo" Width="70">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
