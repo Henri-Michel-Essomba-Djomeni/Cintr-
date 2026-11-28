@@ -10,4 +10,5 @@ public class Utilisateur
     public RoleUtilisateur Role { get; set; }
     public bool Actif { get; set; } = true;
     public DateTime CreeLe { get; set; }
+    public int? PressingId { get; set; }   // vide pour un SuperAdmin
 }

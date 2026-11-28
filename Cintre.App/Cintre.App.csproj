@@ -11,7 +11,9 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
     <PackageReference Include="Dapper" Version="2.1.100" />
+    <PackageReference Include="MailKit" Version="5.0.0" />
     <PackageReference Include="Npgsql" Version="11.0.0" />
+    <PackageReference Include="PDFsharp" Version="6.5.0" />
     <PackageReference Include="QRCoder" Version="1.9.0" />
   </ItemGroup>
 
@@ -19,6 +21,12 @@
   <ItemGroup>
     <EmbeddedResource Include="..\Database\schema.sql" LogicalName="schema.sql" />
     <EmbeddedResource Include="..\Database\seed.sql" LogicalName="seed.sql" />
+    <EmbeddedResource Include="..\Database\migrations\*.sql" LogicalName="migrations.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <EmbeddedResource Include="Web\*" LogicalName="web.%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>
