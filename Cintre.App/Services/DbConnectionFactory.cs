@@ -30,10 +30,24 @@ public static class DbConnectionFactory
     }
 
     // Retourne une connexion déjà ouverte, à utiliser avec « using var cx = ... »
+    // Chaque connexion dit à PostgreSQL pour quel pressing elle travaille (voir ContexteBase)
     public static NpgsqlConnection Creer()
     {
         var cx = new NpgsqlConnection(ConstruireChaine(ConfigService.Obtenir()));
         cx.Open();
+        ContexteBase.Appliquer(cx);
+        return cx;
+    }
+
+    // Réservée aux opérations qui doivent écrire dans tous les pressings (création d'un pressing)
+    public static NpgsqlConnection CreerSuperAdmin()
+    {
+        if (!Session.EstSuperAdmin)
+            throw new UnauthorizedAccessException("Opération réservée au SuperAdmin.");
+
+        var cx = new NpgsqlConnection(ConstruireChaine(ConfigService.Obtenir()));
+        cx.Open();
+        ContexteBase.AppliquerSuperAdmin(cx);
         return cx;
     }
 
