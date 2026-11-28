@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Cintre.App.Data;
@@ -54,6 +55,11 @@ public class DepotViewModel : ViewModelBase
     // ------------------------------------------------------------------
     // Accès aux données : vrai code d'abord, test sinon
     // ------------------------------------------------------------------
+
+    // Montant au format français : 1 800 FCFA (espace normal, pas insécable)
+    private static string Fcfa(decimal montant) =>
+        montant.ToString("N0", new CultureInfo("fr-FR"))
+               .Replace('\u202f', ' ').Replace('\u00a0', ' ') + " FCFA";
 
     private static List<Client> ChercherClients(string texte)
     {
@@ -232,7 +238,7 @@ public class DepotViewModel : ViewModelBase
         }
     }
 
-    public string PrixTexte => PrixCourant.HasValue ? $"{PrixCourant.Value:N0} FCFA" : "—";
+    public string PrixTexte => PrixCourant.HasValue ? Fcfa(PrixCourant.Value) : "—";
 
     private int _quantite = 1;
     public int Quantite { get => _quantite; set => SetProperty(ref _quantite, value); }
@@ -284,8 +290,8 @@ public class DepotViewModel : ViewModelBase
     public bool RemiseDisponible => ClientChoisi != null && PeutUtiliserRemise(ClientChoisi);
     public decimal RemisePourcent => (RemiseDisponible && AppliquerRemise) ? ObtenirRemise(ClientChoisi!) : 0;
     public decimal Total => CommandeService.CalculerTotal(Lignes.ToList(), Urgent, RemisePourcent);
-    public string TotalTexte => $"{Total:N0} FCFA";
-    public string SousTotalTexte => $"{Lignes.Sum(l => l.SousTotal):N0} FCFA";
+    public string TotalTexte => Fcfa(Total);
+    public string SousTotalTexte => Fcfa(Lignes.Sum(l => l.SousTotal));
     public string DatePrevueTexte => CommandeService.CalculerDatePrevue(DateTime.Now, Urgent).ToString("dddd d MMMM yyyy");
     public string RemiseTexte => RemisePourcent > 0 ? $"Remise fidélité : -{RemisePourcent:0.##} %" : "";
     public string ResumeArticles => $"{Lignes.Sum(l => l.Quantite)} article(s) sur {Lignes.Count} ligne(s)";
@@ -501,19 +507,19 @@ public class DepotViewModel : ViewModelBase
             ConsommerPoints(commande.ClientId);
 
         Reinitialiser();
-        Info = $"Dépôt enregistré : {commande.NumeroTicket} · total {commande.MontantTotal:N0} FCFA";
+        Info = $"Dépôt enregistré : {commande.NumeroTicket} · total {Fcfa(commande.MontantTotal)}";
         // Proposer l'impression du ticket (T22)
-try
-{
-    // on relit la commande pour avoir les lignes et le nom du client complets
-    var aImprimer = CommandeRepository.ObtenirParId(idCommande) ?? commande;
-    if (MessageService.Confirmer("Imprimer le ticket ?"))
-        TicketService.Imprimer(aImprimer);
-}
-catch (Exception ex)
-{
-    MessageService.Erreur("Impossible d'imprimer le ticket : " + ex.Message);
-}
+        try
+        {
+            // on relit la commande pour avoir les lignes et le nom du client complets
+            var aImprimer = CommandeRepository.ObtenirParId(idCommande) ?? commande;
+            if (MessageService.Confirmer("Imprimer le ticket ?"))
+                TicketService.Imprimer(aImprimer);
+        }
+        catch (Exception ex)
+        {
+            MessageService.Erreur("Impossible d'imprimer le ticket : " + ex.Message);
+        }
     }
 
     // Retour à l'étape 1, prêt pour le client suivant
