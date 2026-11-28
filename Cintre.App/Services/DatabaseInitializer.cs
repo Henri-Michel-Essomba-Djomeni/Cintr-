@@ -45,7 +45,8 @@ public static class DatabaseInitializer
         }
         finally
         {
-            cx.Execute("SELECT set_config('app.super_admin', 'off', false), set_config('app.pressing_id', '1', false)");
+            // On rend à la connexion le contexte de la session (pressing courant)
+            ContexteBase.Appliquer(cx);
         }
     }
 
