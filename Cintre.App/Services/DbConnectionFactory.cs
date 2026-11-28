@@ -30,10 +30,15 @@ public static class DbConnectionFactory
     }
 
     // Retourne une connexion déjà ouverte, à utiliser avec « using var cx = ... »
+    // Retourne une connexion déjà ouverte, à utiliser avec « using var cx = ... »
     public static NpgsqlConnection Creer()
     {
         var cx = new NpgsqlConnection(ConstruireChaine(ConfigService.Obtenir()));
         cx.Open();
+
+        // TEMPORAIRE (T40) : tant que T41 n'est pas fusionnée, l'application travaille sur le pressing 1.
+        // T41 remplace cette ligne par ContexteBase.Appliquer(cx).
+        cx.Execute("SELECT set_config('app.pressing_id', '1', false), set_config('app.super_admin', 'off', false)");
         return cx;
     }
 
